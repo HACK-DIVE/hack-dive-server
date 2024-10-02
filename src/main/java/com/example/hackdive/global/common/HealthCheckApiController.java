@@ -18,7 +18,7 @@ public class HealthCheckApiController {
 
     @RequestMapping("/")
     public String hackdiveServer() {
-        return "hackdiveServer!";
+        return "hackdiveServer!!";
 
     }
 
