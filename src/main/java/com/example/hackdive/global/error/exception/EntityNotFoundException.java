@@ -1,6 +1,7 @@
 package com.example.hackdive.global.error.exception;
 
-import com.example.comus.global.error.ErrorCode;
+
+import com.example.hackdive.global.error.ErrorCode;
 
 public class EntityNotFoundException extends BusinessException {
     public EntityNotFoundException() {
