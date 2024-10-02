@@ -1,0 +1,57 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Latest Repo
+      uses: actions/checkout@v3
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Create application.yml from secret
+      run: |
+        mkdir -p src/main/resources
+        echo "${{ secrets.APPLICATION_YML }}" > src/main/resources/application.yml
+    - name: Build with Gradle
+      run: ./gradlew clean build -x test
+
+    - name: Docker login
+      run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+    - name: Docker build
+      run: |
+        docker build -t hackdive .                          #컨테이너명
+        docker tag hackdive hysong4u/hackdive:latest  #컨테이너명
+        docker push hysong4u/hackdive:latest                #컨테이너명
+    - name: Deploy to EC2
+      env:
+        PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        SERVER_ADDRESS: ${{ secrets.EC2_SERVER_ADDRESS }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key.pem
+        chmod 600 private_key.pem
+        ssh -T -o StrictHostKeyChecking=no -i private_key.pem ubuntu@$SERVER_ADDRESS << 'EOF'
+          docker pull hysong4u/hackdive:latest                                                  #컨테이너명
+          existing_container_id=$(sudo docker ps -q --filter "publish=8088")                    #포트번호
+          [ -n "$existing_container_id" ] && sudo docker stop $existing_container_id && sudo docker rm $existing_container_id
+          sudo docker image prune -f
+          docker run -d -p 8088:8088 hysong4u/hackdive:latest        #컨테이너명&포트번호
+        EOF
+        # docker 권한 문제 발생시
+        # sudo chmod 660 /var/run/docker.sock
+        # sudo /usr/sbin/usermod -aG docker $USER
+        # sudo /usr/sbin/usermod -aG docker ubuntu
