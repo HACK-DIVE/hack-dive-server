@@ -58,12 +58,12 @@ public class MessageService {
         Workspace workspace = workspaceRepository.findById(workspaceId)
                 .orElseThrow(() -> new RuntimeException("No workspace id " + workspaceId));
 
-        return messageRepository.findAllByWorkspaceOrderByCreatedAtDesc(workspace);
+        return messageRepository.findAllByWorkspaceOrderByCreatedAtAsc(workspace);
     }
 
 
     public List<Message> getLLMInputs(Workspace workspace, boolean isFirst) {
-        List<Message> messages = messageRepository.findAllByWorkspaceOrderByCreatedAtDesc(workspace);
+        List<Message> messages = messageRepository.findAllByWorkspaceOrderByCreatedAtAsc(workspace);
         if (messages == null) {
             throw new RuntimeException("The Messages is Null");
         }
