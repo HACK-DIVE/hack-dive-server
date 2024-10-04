@@ -20,7 +20,7 @@ public class MessageController {
     private final MessageService messageService;
 
     // AI 채팅 반환(stream)
-    @GetMapping("/recieve/{workspaceId}/{isFirst}")
+    @PostMapping("/recieve/{workspaceId}/{isFirst}")
     public SseEmitter streamMessages(@PathVariable("workspaceId") Long workspaceId, @PathVariable("isFirst") boolean isFirst) {
         SseEmitter emitter = new SseEmitter();
 
