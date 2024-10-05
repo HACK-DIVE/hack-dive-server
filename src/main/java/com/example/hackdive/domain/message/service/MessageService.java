@@ -19,6 +19,7 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class MessageService {
                 .workspace(workspace)
                 .role(GPTConfig.ROLE_USER)
                 .content(content)
-                .createdAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
 
         messageRepository.save(newMessage);
@@ -61,13 +62,22 @@ public class MessageService {
         return messageRepository.findAllByWorkspaceOrderByCreatedAtAsc(workspace);
     }
 
-
     public List<Message> getLLMInputs(Workspace workspace, boolean isFirst) {
-        List<Message> messages = messageRepository.findAllByWorkspaceOrderByCreatedAtAsc(workspace);
+        List<Message> messages = messageRepository.findAllByWorkspaceOrderByCreatedAtDesc(workspace);
         if (messages == null) {
             throw new RuntimeException("The Messages is Null");
         }
         List<Message> parsedDatas = new ArrayList<>();
+
+        String systemPrompt = GPTConfig.getSystemPrompts(isFirst);
+        Message systemMessage = Message.builder()
+                .workspace(workspace)
+                .role(GPTConfig.ROLE_ASSISTANT)
+                .content(systemPrompt)
+                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .build();
+
+        parsedDatas.add(systemMessage );
 
         if (!isFirst) {
             for (int i = messages.size() - 1; i >= 0; i--) {
@@ -80,6 +90,7 @@ public class MessageService {
 
 
     public Flux<String> getResponse(List<Message> messages) {
+
         WebClient webClient = WebClient.builder()
                 .baseUrl(GPTConfig.CHAT_URL)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -117,6 +128,7 @@ public class MessageService {
                 .orElseThrow(() -> new RuntimeException("No workspace id " + workspaceId));
 
         List<Message> inputMessages = getLLMInputs(workspace, isFirst);
+
         StringBuilder accumulatedContent = new StringBuilder();
 
         return Flux.create(sink -> {
@@ -128,9 +140,10 @@ public class MessageService {
                         .workspace(workspace)
                         .role(GPTConfig.ROLE_ASSISTANT)
                         .content(systemPrompt)
-                        .createdAt(LocalDateTime.now())
+                        .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                         .build());
                 sink.next(systemPrompt);
+                sink.complete();
                 return;
             }
 
@@ -139,23 +152,29 @@ public class MessageService {
             eventStream.subscribe(
                     content -> {
                         String extractedContent = extractContent(content);
+                        System.out.println("Extracted Content: " + extractedContent);
                         accumulatedContent.append(extractedContent);
                         sink.next(extractedContent);
                     },
-                    sink::error,
+                    error -> {
+                        System.err.println("Error occurred: " + error.getMessage());
+                        sink.error(error);
+                    },
                     () -> {
+                        System.out.println("Final accumulated content: " + accumulatedContent.toString()); // 최종 응답 확인
                         messageRepository.save(Message.builder()
                                 .workspace(workspace)
                                 .role(GPTConfig.ROLE_ASSISTANT)
                                 .content(accumulatedContent.toString())
-                                .createdAt(LocalDateTime.now())
+                                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
                                 .build());
                         sink.complete();
-                    });
-
+                    }
+            );
             new SseEmitter().onTimeout(sink::complete);
         });
     }
+
 
     /* 동기(sync) 호출
     public String getResponseSync(List<Message> messages) {
