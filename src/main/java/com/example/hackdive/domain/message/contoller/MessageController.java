@@ -54,6 +54,12 @@ public class MessageController {
         return SuccessResponse.ok(messages);
     }
 
+    @PostMapping("/image/{workspaceId}")
+    public ResponseEntity<SuccessResponse<?>> imageMessage(@PathVariable("workspaceId") Long workspaceId) throws JsonProcessingException {
+        messageService.saveImageMessage(workspaceId);
+        return SuccessResponse.ok("");
+    }
+
 
     // AI 채팅 반환(sync)
     /*

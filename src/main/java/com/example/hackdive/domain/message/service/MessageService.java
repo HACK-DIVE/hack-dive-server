@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +35,19 @@ public class MessageService {
         this.messageRepository = messageRepository;
         this.workspaceRepository = workspaceRepository;
     }
+
+    public void saveImageMessage(Long workspaceId) {
+        Workspace workspace = workspaceRepository.findById(workspaceId)
+                .orElseThrow(() -> new RuntimeException("No workspace id " + workspaceId));
+        Message newMessage = Message.builder()
+                .workspace(workspace)
+                .role(GPTConfig.ROLE_ASSISTANT)
+                .content("images")
+                .createdAt(LocalDateTime.now())
+                .build();
+        messageRepository.save(newMessage);
+    }
+
 
     public void saveMessage(Long workspaceId, String message) throws JsonProcessingException {
         Workspace workspace = workspaceRepository.findById(workspaceId)
