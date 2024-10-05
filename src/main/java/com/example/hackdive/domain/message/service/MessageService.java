@@ -49,7 +49,7 @@ public class MessageService {
                 .workspace(workspace)
                 .role(GPTConfig.ROLE_USER)
                 .content(content)
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now())
                 .build();
 
         messageRepository.save(newMessage);
@@ -74,7 +74,7 @@ public class MessageService {
                 .workspace(workspace)
                 .role(GPTConfig.ROLE_ASSISTANT)
                 .content(systemPrompt)
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .createdAt(LocalDateTime.now())
                 .build();
 
         parsedDatas.add(systemMessage );
@@ -140,7 +140,7 @@ public class MessageService {
                         .workspace(workspace)
                         .role(GPTConfig.ROLE_ASSISTANT)
                         .content(systemPrompt)
-                        .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                        .createdAt(LocalDateTime.now())
                         .build());
                 sink.next(systemPrompt);
                 sink.complete();
@@ -166,7 +166,7 @@ public class MessageService {
                                 .workspace(workspace)
                                 .role(GPTConfig.ROLE_ASSISTANT)
                                 .content(accumulatedContent.toString())
-                                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                                .createdAt(LocalDateTime.now())
                                 .build());
                         sink.complete();
                     }

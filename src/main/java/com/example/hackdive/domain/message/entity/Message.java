@@ -1,6 +1,7 @@
 package com.example.hackdive.domain.message.entity;
 
 import com.example.hackdive.domain.workspace.entity.Workspace;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
@@ -32,5 +33,6 @@ public class Message {
     private Workspace workspace;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdAt;
 }
