@@ -112,16 +112,21 @@ public class MessageService {
                 .bodyToFlux(String.class);
     }
 
+
+
     public String extractContent(String jsonEvent) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(jsonEvent);
-            return node.at("/choices/0/delta/content").asText();
+            String extractedText = node.at("/choices/0/delta/content").asText();
+
+            return extractedText.replace(" ", "*");
         } catch (IOException e) {
             System.err.println("Error processing JSON: " + e.getMessage());
             return "";
         }
     }
+
 
     public Flux<String> streamMessages(Long workspaceId, boolean isFirst) {
         Workspace workspace = workspaceRepository.findById(workspaceId)
