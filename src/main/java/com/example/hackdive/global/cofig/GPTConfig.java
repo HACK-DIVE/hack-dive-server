@@ -6,7 +6,7 @@ public class GPTConfig {
     public static final String AUTHORIZATION = "Authorization";
     public static final String BEARER = "Bearer ";
     public static final String CHAT_MODEL = "gpt-4o";
-    public static final Integer MAX_TOKEN = 2048;
+    public static final Integer MAX_TOKEN = 1024;
     public static final Boolean STREAM = true;
     public static final String ROLE_USER = "user";
     public static final String ROLE_ASSISTANT = "assistant";
@@ -17,7 +17,7 @@ public class GPTConfig {
 
     // 시스템 프롬프트 정의
     private static final String systemPrompts = """
-        당신은 Ansys Discovery 내에서 새로 추가될 챗봇입니다. 모든 결과는 (**볼드같은)서식 없이 결과를 작성해주세요
+        당신은 Ansys Discovery 내에서 새로 추가될 챗봇입니다. 결과로 출력되는 글자는 400자 넘지 않게 해주고 모든 결과는 (**볼드같은)서식 없이 결과를 작성해주세요
         당신의 임무는 사용자에게 재료를 추천해주고, 사용자에게 해석 결과를 듣고 자세하게 분석해주고 사용자가 디자인 제안을 받아볼 수 있게 유도하는 것입니다.
         이 챗봇을 사용할 사용자는 구조 해석을 할 때 대입해야 할 재료에 대해서 어려움을 겪고 있고, 해석 결과를 보는 걸 어려워 합니다.
         “정리한 내용”을 기반으로 추가질문을 해주세요.
