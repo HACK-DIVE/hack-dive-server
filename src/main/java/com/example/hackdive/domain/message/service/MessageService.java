@@ -120,7 +120,7 @@ public class MessageService {
             JsonNode node = mapper.readTree(jsonEvent);
             String extractedText = node.at("/choices/0/delta/content").asText();
 
-            return extractedText.replace(" ", "*");
+            return extractedText;
         } catch (IOException e) {
             System.err.println("Error processing JSON: " + e.getMessage());
             return "";
