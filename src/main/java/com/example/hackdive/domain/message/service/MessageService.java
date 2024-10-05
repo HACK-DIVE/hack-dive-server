@@ -119,8 +119,7 @@ public class MessageService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode node = mapper.readTree(jsonEvent);
             String extractedText = node.at("/choices/0/delta/content").asText();
-
-            return extractedText;
+            return extractedText.replace(" ", "*");
         } catch (IOException e) {
             System.err.println("Error processing JSON: " + e.getMessage());
             return "";
@@ -170,7 +169,7 @@ public class MessageService {
                         messageRepository.save(Message.builder()
                                 .workspace(workspace)
                                 .role(GPTConfig.ROLE_ASSISTANT)
-                                .content(accumulatedContent.toString())
+                                .content(accumulatedContent.toString().replace("*", " "))
                                 .createdAt(LocalDateTime.now())
                                 .build());
                         sink.complete();
