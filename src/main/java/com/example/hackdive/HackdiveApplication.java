@@ -12,9 +12,5 @@ public class HackdiveApplication {
     public static void main(String[] args) {
         SpringApplication.run(HackdiveApplication.class, args);
     }
-    @PostConstruct
-    public void init() {
-        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
-    }
 
 }
