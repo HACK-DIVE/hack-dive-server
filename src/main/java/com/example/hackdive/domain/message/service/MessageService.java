@@ -64,30 +64,22 @@ public class MessageService {
 
     public List<Message> getLLMInputs(Workspace workspace, boolean isFirst) {
         List<Message> messages = messageRepository.findAllByWorkspaceOrderByCreatedAtDesc(workspace);
-        if (messages == null) {
-            throw new RuntimeException("The Messages is Null");
-        }
+        if(messages == null) throw new RuntimeException("The Messages is Null");
+
         List<Message> parsedDatas = new ArrayList<>();
 
-        String systemPrompt = GPTConfig.getSystemPrompts(isFirst);
-        Message systemMessage = Message.builder()
+        parsedDatas.add(Message.builder()
                 .workspace(workspace)
                 .role(GPTConfig.ROLE_ASSISTANT)
-                .content(systemPrompt)
+                .content(GPTConfig.getSystemPrompts(isFirst))
                 .createdAt(LocalDateTime.now())
-                .build();
+                .build()
+        );
+        if(isFirst) return parsedDatas;
 
-        parsedDatas.add(systemMessage );
-
-        if (!isFirst) {
-            for (int i = messages.size() - 1; i >= 0; i--) {
-                parsedDatas.add(messages.get(i));
-            }
-        }
-
+        for(int i=messages.size()-1; i>=0; i--) parsedDatas.add(messages.get(i));
         return parsedDatas;
     }
-
 
     public Flux<String> getResponse(List<Message> messages) {
 
