@@ -2,6 +2,7 @@ package com.example.hackdive.global.cofig;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig {
     @Bean
+    @CrossOrigin(origins = "*")
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -18,6 +20,7 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://hack-dive-front.vercel.app");
         config.addAllowedOrigin("https://singular-gecko-922cd1.netlify.app");
+        config.addAllowedOrigin("*");
 
         config.addAllowedHeader("*");
         config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
