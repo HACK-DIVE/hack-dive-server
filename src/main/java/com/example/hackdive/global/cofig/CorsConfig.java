@@ -12,7 +12,6 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig {
     @Bean
-    @CrossOrigin(origins = "*")
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
@@ -20,7 +19,6 @@ public class CorsConfig {
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://hack-dive-front.vercel.app");
         config.addAllowedOrigin("https://singular-gecko-922cd1.netlify.app");
-        config.addAllowedOrigin("*");
 
         config.addAllowedHeader("*");
         config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
