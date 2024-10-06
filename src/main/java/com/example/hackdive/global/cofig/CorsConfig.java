@@ -17,7 +17,7 @@ public class CorsConfig {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedOrigin("https://hack-dive-front.vercel.app");
-        config.addAllowedOrigin(" https://singular-gecko-922cd1.netlify.app");
+        config.addAllowedOrigin("https://singular-gecko-922cd1.netlify.app");
 
         config.addAllowedHeader("*");
         config.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
